@@ -1,6 +1,7 @@
 package com.example.demo.Controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,29 @@ public class UserController {
 		}
 
 		userService.save(user);
+
+		return new RestResponse(HttpStatus.OK.value(), "Operacion exitosa");
+	}
+
+	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	public List<User> getUsers() {
+
+		return userService.findAll();
+
+	}
+
+	@RequestMapping(value = "/deleteUser", method = RequestMethod.POST)
+	public RestResponse deleteUser(@RequestBody String userJson)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		mapper = new ObjectMapper();
+		User user = this.mapper.readValue(userJson, User.class);
+
+		if (user.getId() == null) {
+			return new RestResponse(HttpStatus.NOT_ACCEPTABLE.value(), "Los campos obligatorios no estan completos");
+		}
+
+		userService.delete(user.getId());
 
 		return new RestResponse(HttpStatus.OK.value(), "Operacion exitosa");
 	}
